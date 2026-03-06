@@ -57,14 +57,13 @@ AWS上にNAS環境を構築する方法を学習します。
 
 ## 構成図
 
-VPC
-└ Private Subnet
-
+    VPC
+    └ Private Subnet
     ├ EC2 (Amazon Linux)
     │     └ NFS Client
     │
     └ FSx for NetApp ONTAP
-          └ Storage Virtual Machine (SVM)
+        └ Storage Virtual Machine (SVM)
                 └ NFS Volume
 
 EC2からNFSプロトコルを利用して、
