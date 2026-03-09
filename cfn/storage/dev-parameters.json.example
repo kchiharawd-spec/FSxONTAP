@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "SystemName",
+    "ParameterValue": "fsx-lab"
+  },
+  {
+    "ParameterKey": "EnvType",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "StorageCapacity",
+    "ParameterValue": "1024"
+  },
+  {
+    "ParameterKey": "ThroughputCapacity",
+    "ParameterValue": "128"
+  },
+  {
+    "ParameterKey": "FsxAdminPassword",
+    "ParameterValue": "YourPassword"
+  },
+  {
+    "ParameterKey": "VolumeSizeInMegabytes",
+    "ParameterValue": "102400"
+  },
+  {
+    "ParameterKey": "JunctionPath",
+    "ParameterValue": "/vol1"
+  }
+]

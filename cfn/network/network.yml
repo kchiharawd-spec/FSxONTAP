@@ -1,14 +1,14 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "FSx ONTAP hands-on network stack"
+AWSTemplateFormatVersion: 2010-09-09
+Description: FSx ONTAP hands-on network stack
 
 Parameters:
   SystemName:
     Type: String
-    Description: "System name"
+    Description: System name
 
   EnvType:
     Type: String
-    Description: "Environment type"
+    Description: Environment type
     AllowedValues:
       - dev
       - stg
@@ -16,19 +16,19 @@ Parameters:
 
   VpcCidr:
     Type: String
-    Description: "VPC CIDR block"
+    Description: VPC CIDR block
 
   PublicSubnetCidr:
     Type: String
-    Description: "Public subnet CIDR block"
+    Description: Public subnet CIDR block
 
   PrivateSubnetCidr:
     Type: String
-    Description: "Private subnet CIDR block"
+    Description: Private subnet CIDR block
 
   AvailabilityZone:
     Type: String
-    Description: "Availability Zone"
+    Description: Availability Zone
 
 Resources:
 
@@ -40,14 +40,14 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-vpc"
+          Value: !Sub ${SystemName}-${EnvType}-vpc
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-igw"
+          Value: !Sub ${SystemName}-${EnvType}-igw
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -64,7 +64,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-public-subnet"
+          Value: !Sub ${SystemName}-${EnvType}-public-subnet
 
   PrivateSubnet:
     Type: AWS::EC2::Subnet
@@ -75,7 +75,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-private-subnet"
+          Value: !Sub ${SystemName}-${EnvType}-private-subnet
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -83,7 +83,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-public-rt"
+          Value: !Sub ${SystemName}-${EnvType}-public-rt
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -91,7 +91,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${SystemName}-${EnvType}-private-rt"
+          Value: !Sub ${SystemName}-${EnvType}-private-rt
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -115,19 +115,20 @@ Resources:
 
 Outputs:
   VpcId:
-    Description: "VPC ID"
+    Description: VPC ID
     Value: !Ref VPC
     Export:
-      Name: !Sub "${SystemName}-${EnvType}-vpc-id"
+      Name: !Sub ${SystemName}-${EnvType}-vpc-id
 
   PublicSubnetId:
-    Description: "Public subnet ID"
+    Description: Public subnet ID
     Value: !Ref PublicSubnet
     Export:
-      Name: !Sub "${SystemName}-${EnvType}-public-subnet-id"
+      Name: !Sub ${SystemName}-${EnvType}-public-subnet-id
 
   PrivateSubnetId:
-    Description: "Private subnet ID"
+    Description: Private subnet ID
     Value: !Ref PrivateSubnet
     Export:
-      Name: !Sub "${SystemName}-${EnvType}-private-subnet-id"
+      Name: !Sub ${SystemName}-${EnvType}-private-subnet-id
+

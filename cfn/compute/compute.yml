@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: FSx ONTAP hands-on compute stack
+
+Parameters:
+  SystemName:
+    Type: String
+    Description: System name
+
+  EnvType:
+    Type: String
+    Description: Environment type
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+
+  AmiId:
+    Type: AWS::EC2::Image::Id
+
+  InstanceType:
+    Type: String
+
+  MyIp:
+    Type: String
+    Description: Your global IP address (x.x.x.x/32)
+
+Resources:
+
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Bastion security group
+      VpcId:
+        Fn::ImportValue: !Sub ${SystemName}-${EnvType}-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIp
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-bastion-sg
+
+  PrivateEc2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Private EC2 security group
+      VpcId:
+        Fn::ImportValue: !Sub ${SystemName}-${EnvType}-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-private-ec2-sg
+
+  BastionInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      SubnetId:
+        Fn::ImportValue: !Sub ${SystemName}-${EnvType}-public-subnet-id
+      SecurityGroupIds:
+        - !Ref BastionSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-bastion
+
+  PrivateInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      SubnetId:
+        Fn::ImportValue: !Sub ${SystemName}-${EnvType}-private-subnet-id
+      SecurityGroupIds:
+        - !Ref PrivateEc2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-private-ec2
+
+Outputs:
+  BastionInstanceId:
+    Description: Bastion EC2 Instance ID
+    Value: !Ref BastionInstance
+
+  PrivateInstanceId:
+    Description: Private EC2 Instance ID
+    Value: !Ref PrivateInstance
+
+  PrivateEc2SecurityGroupId:
+    Description: Private EC2 security group ID
+    Value: !Ref PrivateEc2SecurityGroup
+    Export:
+      Name: !Sub ${SystemName}-${EnvType}-private-ec2-sg-id

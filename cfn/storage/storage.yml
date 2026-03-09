@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: FSx ONTAP hands-on network stack
+
+Parameters:
+  SystemName:
+    Type: String
+    Description: System name
+
+  EnvType:
+    Type: String
+    Description: Environment type
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+
+  StorageCapacity:
+    Type: Number
+    Description: FSx storage capacity in GiB
+
+  ThroughputCapacity:
+    Type: Number
+    Description: FSx throughput capacity in MBps
+
+  FsxAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: FSx admin password
+
+  VolumeSizeInMegabytes:
+    Type: Number
+    Description: Volume size in megabytes
+
+  JunctionPath:
+    Type: String
+    Description: Junction path for NFS volume
+
+Resources:
+
+  FsxSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: FSx ONTAP security group
+      VpcId:
+        Fn::ImportValue: !Sub ${SystemName}-${EnvType}-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId:
+            Fn::ImportValue: !Sub ${SystemName}-${EnvType}-private-ec2-sg-id
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-fsx-sg
+
+  FsxFileSystem:
+    Type: AWS::FSx::FileSystem
+    Properties:
+      FileSystemType: ONTAP
+      StorageCapacity: !Ref StorageCapacity
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${SystemName}-${EnvType}-private-subnet-id
+      SecurityGroupIds:
+        - !Ref FsxSecurityGroup
+      OntapConfiguration:
+        DeploymentType: SINGLE_AZ_1
+        ThroughputCapacity: !Ref ThroughputCapacity
+        FsxAdminPassword: !Ref FsxAdminPassword
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-fsx
+
+  StorageVirtualMachine:
+    Type: AWS::FSx::StorageVirtualMachine
+    Properties:
+      FileSystemId: !Ref FsxFileSystem
+      Name: !Sub ${SystemName}-${EnvType}-svm
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-svm
+
+  OntapVolume:
+    Type: AWS::FSx::Volume
+    Properties:
+      Name: !Sub ${SystemName}_${EnvType}_volume
+      VolumeType: ONTAP
+      OntapConfiguration:
+        JunctionPath: !Ref JunctionPath
+        OntapVolumeType: RW
+        SecurityStyle: UNIX
+        SizeInMegabytes: !Ref VolumeSizeInMegabytes
+        StorageEfficiencyEnabled: true
+        StorageVirtualMachineId: !Ref StorageVirtualMachine
+      Tags:
+        - Key: Name
+          Value: !Sub ${SystemName}-${EnvType}-volume
+
+Outputs:
+
+  FsxFileSystemId:
+    Description: FSx FileSystem ID
+    Value: !Ref FsxFileSystem
+
+  StorageVirtualMachineId:
+    Description: Storage Virtual Machine ID
+    Value: !Ref StorageVirtualMachine
+
+  FsxSecurityGroupId:
+    Description: FSx security group ID
+    Value: !Ref FsxSecurityGroup
+  

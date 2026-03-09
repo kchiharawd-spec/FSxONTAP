@@ -14,7 +14,7 @@ cd "$(dirname "$0")"
 SYSTEM_NAME="fsx-lab"
 ENV_TYPE=$1
 
-create_change_set() {
+create_change_set_create() {
     STACK_NAME=$1
     CHANGE_SET_NAME="${STACK_NAME}-create-$(date +%s)"
 
@@ -26,8 +26,24 @@ create_change_set() {
         --parameters "file://../cfn/${STACK_NAME}/${ENV_TYPE}-parameters.json"
 }
 
-create_change_set network
-#create_change_set compute
-#create_change_set storage
+create_change_set_update() {
+    STACK_NAME=$1
+    CHANGE_SET_NAME="${STACK_NAME}-update-$(date +%s)"
+
+    aws cloudformation create-change-set \
+        --stack-name "${SYSTEM_NAME}-${ENV_TYPE}-${STACK_NAME}" \
+        --change-set-name "${CHANGE_SET_NAME}" \
+        --change-set-type UPDATE \
+        --template-body "file://../cfn/${STACK_NAME}/${STACK_NAME}.yml" \
+        --parameters "file://../cfn/${STACK_NAME}/${ENV_TYPE}-parameters.json"
+}
+
+#create_change_set_create network
+#create_change_set_create compute
+create_change_set_create storage
+
+#create_change_set_update network
+#create_change_set_update compute
+#create_change_set_update storage
 
 exit 0

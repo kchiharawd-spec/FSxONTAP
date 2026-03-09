@@ -1,0 +1,29 @@
+# =========================
+# CloudFormation parameters
+# =========================
+
+cfn/**/dev-parameters.json
+cfn/**/stg-parameters.json
+cfn/**/prod-parameters.json
+
+
+# =========================
+# AWS credentials
+# =========================
+
+.aws/
+
+
+# =========================
+# editor settings
+# =========================
+
+.vscode/
+
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db

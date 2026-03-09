@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "SystemName",
+    "ParameterValue": "fsx-lab"
+  },
+  {
+    "ParameterKey": "EnvType",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "KeyPairName",
+    "ParameterValue": "fsx-lab-key"
+  },
+  {
+    "ParameterKey": "AmiId",
+    "ParameterValue": "ami-088103e734f7e0529"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t3.micro"
+  },
+  {
+    "ParameterKey": "MyIp",
+    "ParameterValue": "x.x.x.x/32"
+  }
+]
