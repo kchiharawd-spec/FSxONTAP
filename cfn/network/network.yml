@@ -77,6 +77,24 @@ Resources:
         - Key: Name
           Value: !Sub ${SystemName}-${EnvType}-private-subnet
 
+  NatElasticIp:
+    Type: AWS::EC2::EIP
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub "${SystemName}-${EnvType}-nat-eip"
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatElasticIp.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub "${SystemName}-${EnvType}-natgw"
+
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -91,7 +109,14 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${SystemName}-${EnvType}-private-rt
+          Value: !Sub "${SystemName}-${EnvType}-private-rt"
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
 
   PublicRoute:
     Type: AWS::EC2::Route

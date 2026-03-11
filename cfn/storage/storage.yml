@@ -82,7 +82,7 @@ Resources:
   OntapVolume:
     Type: AWS::FSx::Volume
     Properties:
-      Name: !Sub ${SystemName}_${EnvType}_volume
+      Name: !Sub fsx_${EnvType}_volume
       VolumeType: ONTAP
       OntapConfiguration:
         JunctionPath: !Ref JunctionPath
