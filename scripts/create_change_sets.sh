@@ -39,8 +39,8 @@ create_change_set_update() {
 }
 
 #create_change_set_create network
-#create_change_set_create compute
-create_change_set_create storage
+create_change_set_create compute
+#create_change_set_create storage
 
 #create_change_set_update network
 #create_change_set_update compute
